@@ -25,16 +25,10 @@ static char terminate[5]={'e','x','i','t'};
 static char request[3]={'r','q'};
 static char release[3]={'r','l'};
 static char status[7]={'s','t','a','t','u','s'};
-static char run[4]={'s','u','n'};
+static char run[4]={'r','u','n'};
 static int exit_cond = 1;
 static int holder[5];
-pthread_t t1;
-pthread_t t2;
-pthread_t t3;
-pthread_t t4;
-pthread_t t5;
-
-
+static int count=5;
 
 
 int main(int argc, char *argv[]){
@@ -137,8 +131,30 @@ int main(int argc, char *argv[]){
 				}
 			}
 			else if(strcmp(comp,run)==0){
-				printf("Run");
-			}
+				int ex=0;
+				int executing[5];
+				while(count != 0){
+					int safe = 1;
+					for(int i = 0; i < 5; i++){
+						if(executing[i]){
+							ex=1;
+							if(safe){
+								printf("Thread has started\n");
+								executing[i]=0;
+								count--;
+								safe=1;
+								for(int j = 0; j < 4; j++){
+									available[j]+=allocated[i][j];
+								}
+							}
+						}
+					}
+					if(!safe){
+						printf("Thread is in an unsafe state\n");
+						break;
+					}
+					}
+				}
 			else{
 				printf("Invalid input, use one of RQ, RL, Status, Run, Exit\n");
 			}
