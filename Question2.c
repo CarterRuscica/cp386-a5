@@ -41,36 +41,107 @@ struct Handler {
 };
 
 
-struct Node* create_process(char* name, long start, long end, long size) {
-    struct Node* tmp = NULL;
-    tmp = (struct Node*)malloc(sizeof(struct Node));
-    strcpy(tmp->p.p_name, name);
-    tmp->p.p_start = start;
-    tmp->p.p_end = end;
-    tmp->p.p_size = size;
+struct Process* create_process(char* name, long start, long end, long size) {
+    struct Process* tmp = NULL;
+    tmp = (struct Process*)malloc(sizeof(struct Process));
+    strcpy(tmp->p_name, name);
+    tmp->p_start = start;
+    tmp->p_end = end;
+    tmp->p_size = size;
     return tmp;
 }
 
-struct Node* delete_process(struct Node* head, char name) {
-
+/*
+Creates struct node where it points to process and next is null
+returns created node
+*/
+struct Node* create_node(struct Process *process) {
+    struct Node* newNode;
+    newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->p = *process;
+    newNode->next = NULL;
+    return newNode;
 }
 
-void print_process_info(struct Process p) {
-    printf("Address [%ld, %ld] Process %s\n", p.p_start, p.p_end, p.p_name);
+/*
+Insert process into LinkedList
+head - head of linked list
+process - Process to be inserted into linked list
+pos - position for the process to be inserted at
+*/
+void insert_process(struct Node** head, struct Process* process, int pos) {
+    while (pos--) {
+        if (pos == 0) {
+            struct Node *temp = create_node(process);
+            temp->next = *head;
+            *head = temp;
+        } else {
+            head = &(*head)->next;
+        }
+    }
+
+    data->free_memory = data->free_memory - process->p_size;
+    data->processes++;
+}
+
+/*
+Delete process from linkedList given name of the process
+head - head of linked list
+name - name of process to be deleted
+*/
+void delete_process(struct Node** head, char *name) {
+    struct Node *temp = *head, *prev;
+    while (temp != NULL && strcmp(temp->p.p_name, name) != 0) {
+        prev = temp;
+        temp = temp->next;
+    }
+    if (temp == NULL){
+        return;
+    }
+    prev->next = temp->next;
+    data->free_memory = data->free_memory + temp->p.p_size;
+    data->processes--;
+    free (temp);
+}
+
+/*
+Print out contents of head
+*/
+void print_handler(struct Node* head) {
+    while (head != NULL) {
+        printf("[%ld : %ld] Process - %s\n", head->p.p_start, head->p.p_end, head->p.p_name);
+        head = head->next;
+    }
 }
 
 int main(int argc, char *argv[]) {
 /*
 Variables
 */
-    struct Node *head;
     data = (struct Handler*)malloc(sizeof(struct Handler));
-    head = (struct Node*)malloc(sizeof(struct Node));
 
 
     data->allocated_memory = atoi(argv[1]);
     data->free_memory = atoi(argv[1]);
     data->processes = 0;
+
+    // Creating initial structure for process management
+    struct Process *end = create_process("test1", data->allocated_memory, data->allocated_memory, 0);
+    struct Node *endNode = create_node(end);
+    struct Process *start = create_process("test2", 0, 0, 0);
+    struct Node *processInfo = create_node(start);
+    processInfo->next = endNode;
+    // Finished creating structure
+
+    struct Process *test = create_process("test3", 0, 0, 0);;
+    insert_process(&processInfo, test, 2);
+    print_handler(processInfo);
+    printf("Trying to delete\n");
+    delete_process(&processInfo, "test3");
+    print_handler(processInfo);
+
+
+
     /*
     data has attributes of memory
 
