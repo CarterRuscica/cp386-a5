@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
 	allocated = malloc(sizeof(int)*4);
 
 	//populate available array
-	for(int i=1; i < argc; i++){
+	for(int i=0; i < argc; i++){
 		available[i] = atoi(argv[i]);
 	}
 		//Setup for exit conditions
@@ -76,7 +76,15 @@ int main(int argc, char *argv[]){
 				}
 			}
 			else if(strcmp(comp,status)==0){
-				printf("Status");
+				printf("Number of customers: %d\n",5);
+				printf("Currently available resources: %d %d %d %d\n",available[1],available[2],available[3],available[4]);
+				printf("Maximum Resources from File:\n");
+				for(int i = 0; i < 5; i++){
+					for(int j = 0; j<4; j++){
+						printf("%d ",maximum[i][j]);
+					}
+					printf("\n");
+				}
 			}
 			else if(strcmp(comp,run)==0){
 				printf("Run");
